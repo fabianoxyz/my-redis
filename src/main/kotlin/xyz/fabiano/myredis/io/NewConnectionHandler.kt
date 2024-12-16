@@ -12,16 +12,18 @@ class NewConnectionHandler(private val serverSocketChannel: AsynchronousServerSo
     private val logger = logger()
 
     override fun completed(socketChannel: AsynchronousSocketChannel, attachment: Void?) {
-        logger.info { "Connection accepted: $socketChannel" }
+        logger.info { "Connection accepted - Remote:${socketChannel.remoteAddress} - Local:${socketChannel.localAddress}" }
+
+        RedisLiteServer.registerClient(socketChannel)
 
         serverSocketChannel.accept<Void?>(null, this)
 
         val buffer = ByteBuffer.allocate(1024)
-        val readCompletionHandler = RequestCommandHandler(socketChannel, buffer)
-        socketChannel.read<Void?>(buffer, null, readCompletionHandler)
+        val requestCommandHandler = RequestCommandHandler(socketChannel, buffer)
+        socketChannel.read<Void?>(buffer, null, requestCommandHandler)
     }
 
     override fun failed(t: Throwable, attachment: Void?) {
-        logger.error("Exception during connection accepting", t)
+        logger.error("Exception attempting to establish connection", t)
     }
 }
