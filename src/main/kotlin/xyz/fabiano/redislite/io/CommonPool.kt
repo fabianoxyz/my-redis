@@ -1,4 +1,4 @@
-package xyz.fabiano.myredis.io
+package xyz.fabiano.redislite.io
 
 import java.util.concurrent.*
 import kotlin.coroutines.*

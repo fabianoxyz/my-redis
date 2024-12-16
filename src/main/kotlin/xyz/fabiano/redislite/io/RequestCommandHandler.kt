@@ -1,7 +1,7 @@
-package xyz.fabiano.myredis.io
+package xyz.fabiano.redislite.io
 
 import org.apache.logging.log4j.kotlin.logger
-import xyz.fabiano.myredis.protocol.datatype.CRLF
+import xyz.fabiano.redislite.protocol.datatype.CRLF
 import java.nio.ByteBuffer
 import java.nio.channels.AsynchronousSocketChannel
 import java.nio.channels.CompletionHandler

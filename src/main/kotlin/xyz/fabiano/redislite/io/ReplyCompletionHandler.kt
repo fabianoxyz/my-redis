@@ -1,4 +1,4 @@
-package xyz.fabiano.myredis.io
+package xyz.fabiano.redislite.io
 
 import org.apache.logging.log4j.kotlin.logger
 import java.nio.ByteBuffer
