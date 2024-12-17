@@ -1,6 +1,5 @@
 package xyz.fabiano.redislite.io
 
-import org.apache.logging.log4j.kotlin.logger
 import java.nio.ByteBuffer
 import java.nio.channels.AsynchronousServerSocketChannel
 import java.nio.channels.AsynchronousSocketChannel

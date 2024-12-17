@@ -1,7 +1,6 @@
 package xyz.fabiano.redislite.io
 
-import org.apache.logging.log4j.kotlin.logger
-import xyz.fabiano.redislite.protocol.datatype.CRLF
+import xyz.fabiano.redislite.resp2.RespValue
 import java.nio.ByteBuffer
 import java.nio.channels.AsynchronousSocketChannel
 import java.nio.channels.CompletionHandler
@@ -34,7 +33,7 @@ internal class RequestCommandHandler(
         val replyCompletionHandler = ReplyCompletionHandler(clientSocketChannel)
         buffer.clear()
 
-        val writeByteBuffer = ByteBuffer.wrap("-UNKCMDERR unknown command${CRLF}".toByteArray(charset))
+        val writeByteBuffer = ByteBuffer.wrap("-UNKCMDERR unknown command${RespValue.CRLF}".toByteArray(charset))
 
         clientSocketChannel.write(writeByteBuffer, null, replyCompletionHandler)
     }
