@@ -1,6 +1,6 @@
 package xyz.fabiano.redislite.resp2
 
-object Resp2ValuesMapper {
+object Resp2Deserializer {
 
     fun deserialize(respValue: String): RespValue {
         val strippedValue = if (respValue.contains(CRLF)) {
