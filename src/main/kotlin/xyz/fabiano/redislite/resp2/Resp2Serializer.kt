@@ -1,19 +1,19 @@
 package xyz.fabiano.redislite.resp2
 
 object Resp2Serializer {
+
     fun serialize(value: String) = serializeBlob(value)
 
     fun serialize(value: Int) = ":$value$CRLF"
 
     fun serialize(e: Throwable) = "-${e.message}$CRLF"
 
-    fun serialize(value: Iterable<*>): String {
-        return value.joinToString(separator = CRLF, prefix = "*", postfix = CRLF) { serialize(it) }
+    fun serialize(value: Collection<*>?): String {
+        if (value == null) return NULL_ARRAY
+        return value.joinToString(separator = "", prefix = "*${value.size}$CRLF", postfix = "") { serialize(it) }
     }
 
-    fun serialize(value: Array<*>): String {
-        return serialize(value.asList())
-    }
+    fun serialize(value: Array<*>) = serialize(value.asList())
 
     fun serializeSimpleString(value: String) = "+$value$CRLF"
 
@@ -22,9 +22,9 @@ object Resp2Serializer {
         else "$${value.length}$CRLF${value}$CRLF"
     }
 
-    fun serialize(value: Any?): String {
+    private fun serialize(value: Any?): String {
         return when (value) {
-            null -> NULL_ARRAY
+            null -> NULL_STRING
             is String -> serialize(value)
             is Int -> serialize(value)
             is Throwable -> serialize(value)

@@ -34,7 +34,7 @@ class Resp2SerializerSpec : DescribeSpec({
 
     describe("Serializing BulkString") {
         it("with null value") {
-            Resp2Serializer.serializeBlob(null) shouldBe "$-1\r\n"
+            Resp2Serializer.serializeBlob(null) shouldBe NULL_STRING
         }
         it("with empty value") {
             Resp2Serializer.serializeBlob("") shouldBe "$0\r\n\r\n"
@@ -55,32 +55,29 @@ class Resp2SerializerSpec : DescribeSpec({
     }
     describe("Serializing Arrays") {
         it("with 'get' and 'key' BulkStrings") {
-            Resp2Serializer.serialize("*2\r\n$3\r\nget\r\n$3\r\nkey\r\n") shouldBe arrayOf("get", "key")
+            Resp2Serializer.serialize(arrayOf("get", "key")) shouldBe "*2\r\n$3\r\nget\r\n$3\r\nkey\r\n"
+            Resp2Serializer.serialize(listOf("get", "key")) shouldBe "*2\r\n$3\r\nget\r\n$3\r\nkey\r\n"
         }
         it("with 'ping' BulkString") {
-            Resp2Serializer.serialize("*1\r\n$4\r\nping\r\n") shouldBe arrayOf("ping")
+            Resp2Serializer.serialize(listOf("ping")) shouldBe "*1\r\n$4\r\nping\r\n"
         }
         it("with 'echo' and 'hello world' BulkStrings") {
-            Resp2Serializer.serialize("*2\r\n$4\r\necho\r\n$11\r\nhello world\r\n") shouldBe arrayOf(
-                "echo", "hello world"
-            )
+            Resp2Serializer.serialize(arrayOf("echo", "hello world")) shouldBe
+                    "*2\r\n$4\r\necho\r\n$11\r\nhello world\r\n"
         }
         it("with an empty string and a null value") {
-            Resp2Serializer.serialize(arrayOf<Any?>("", null)) shouldBe "*2\r\n+\r\n\$-1\r\n"
-            Resp2Serializer.serialize(listOf("", null)) shouldBe "*2\r\n+\r\n\$-1\r\n"
+            Resp2Serializer.serialize(arrayOf<Any?>("", null)) shouldBe "*2\r\n$0\r\n\r\n$NULL_STRING"
+            Resp2Serializer.serialize(listOf("", null)) shouldBe "*2\r\n$0\r\n\r\n$NULL_STRING"
         }
         it("empty") {
             Resp2Serializer.serialize(arrayOf<Any?>()) shouldBe "*0\r\n"
             Resp2Serializer.serialize(setOf<String>()) shouldBe "*0\r\n"
         }
         it("null") {
-            Resp2Serializer.serialize(null) shouldBe "*-1\r\n"
-
-            val nullArray : Array<String>? = null
-            Resp2Serializer.serialize(nullArray) shouldBe "*-1\r\n"
+            Resp2Serializer.serialize(null) shouldBe NULL_ARRAY
 
             val nullList : List<Any?>? = null
-            Resp2Serializer.serialize(nullList) shouldBe "*-1\r\n"
+            Resp2Serializer.serialize(nullList) shouldBe NULL_ARRAY
         }
     }
 })
