@@ -11,35 +11,59 @@ class Resp2ValuesMapperSpec : DescribeSpec({
     }
 
     describe("Deserializing") {
-        it("for BulkStrings/Blobs") {
-            Resp2ValuesMapper.deserialize("$-1\r\n") shouldBe null
-
-            Resp2ValuesMapper.deserialize("$0\r\n\r\n") shouldBe ""
-
-            Resp2ValuesMapper.deserialize("$10\r\nbla\t\nbla\rI\r\n") shouldBe "bla\t\nbla\nI"
+        it("for Integer with negative value") {
+            Resp2ValuesMapper.deserialize(":-123456\r\n").value shouldBe -123456
         }
 
-        it("for SimpleStrings") {
-            Resp2ValuesMapper.deserialize("+OK\r\n") shouldBe "OK"
+        it("for Integer with positive value") {
+            Resp2ValuesMapper.deserialize(":123456\r\n").value shouldBe 123456
+            Resp2ValuesMapper.deserialize(":+123459\r\n").value shouldBe 123459
+            Resp2ValuesMapper.deserialize(":0\r\n").value shouldBe 0
+        }
 
-            Resp2ValuesMapper.deserialize("+hello world\r\n") shouldBe "hello world"
+        it("for 'OK' SimpleString") {
+            Resp2ValuesMapper.deserialize("+OK\r\n").value shouldBe "OK"
+        }
+        it("for 'hello world' SimpleString") {
+            Resp2ValuesMapper.deserialize("+hello world\r\n").value shouldBe "hello world"
+        }
+        it("for empty SimpleString") {
+            Resp2ValuesMapper.deserialize("+\r\n").value shouldBe ""
+        }
+
+        it("for null BulkStrings/Blobs") {
+            Resp2ValuesMapper.deserialize("$-1\r\n").value shouldBe null
+        }
+        it("for empty BulkStrings/Blobs") {
+            Resp2ValuesMapper.deserialize("$0\r\n\r\n").value shouldBe ""
+        }
+        it("for valid BulkStrings/Blobs") {
+            Resp2ValuesMapper.deserialize("$10\r\nbla\t\nbla\rI\r\n").value shouldBe "bla\t\nbla\rI"
         }
 
         it("for Errors") {
-            Resp2ValuesMapper.deserialize("-Error message\r\n") shouldBe "Error message"
+            Resp2ValuesMapper.deserialize("-Error message\r\n").value shouldBe "Error message"
 
-            Resp2ValuesMapper.deserialize("-WRONGTYPE my-message\r\n") shouldBe "WRONGTYPE my-message"
+            Resp2ValuesMapper.deserialize("-WRONGTYPE my-message\r\n").value shouldBe "WRONGTYPE my-message"
         }
 
-        it("for Arrays with 'get' and 'key' BulkStrings") {
-            Resp2ValuesMapper.deserialize("*2\r\n$3\r\nget\r\n$3\r\nkey\r\n") shouldBe arrayOf("get", "key")
-
-            Resp2ValuesMapper.deserialize("*1\r\n$4\r\nping\r\n") shouldBe arrayOf("ping")
-
-            Resp2ValuesMapper.deserialize("*2\r\n$4\r\necho\r\n$11\r\nhello world\r\n") shouldBe arrayOf("echo", "hello world")
+        it("for Array with 'get' and 'key' BulkStrings") {
+            Resp2ValuesMapper.deserialize("*2\r\n$3\r\nget\r\n$3\r\nkey\r\n").value shouldBe arrayOf("get", "key")
+        }
+        it("for Array with 'ping' BulkString") {
+            Resp2ValuesMapper.deserialize("*1\r\n$4\r\nping\r\n").value shouldBe arrayOf("ping")
+        }
+        it("for Array with 'echo' and 'hello world' BulkStrings") {
+            Resp2ValuesMapper.deserialize("*2\r\n$4\r\necho\r\n$11\r\nhello world\r\n").value shouldBe arrayOf("echo", "hello world")
+        }
+        it("for Array with an empty string and a null value") {
+            Resp2ValuesMapper.deserialize("*2\r\n+\r\n\$-1\r\n").value shouldBe arrayOf<Any?>("", null)
+        }
+        it("for an empty Array") {
+            Resp2ValuesMapper.deserialize("*0\r\n").value shouldBe arrayOf<Any?>()
+        }
+        it("for a null Array") {
+            Resp2ValuesMapper.deserialize("*-1\r\n").value shouldBe null
         }
     }
-
-
-
 })
