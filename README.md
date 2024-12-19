@@ -8,7 +8,7 @@ It's inspired by the challenge proposed by [John Crickett](https://github.com/jo
 This solution is implemented in Kotlin 2.1.x using JVM 21.
 
 ## Description
-This is Redis-like server with support for RESP v2 and v3 protocols.
+This is Redis-like server with support for RESP v2 protocol.
 It seamlessly works with the Redis CLI, as well as the Jedis (Java) Client for Redis 
 or any other standard client.
 

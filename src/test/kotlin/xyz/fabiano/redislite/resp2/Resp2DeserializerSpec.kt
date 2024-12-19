@@ -41,10 +41,8 @@ class Resp2DeserializerSpec : DescribeSpec({
         it("with 'bla\\t\\nbla\\rI' value") {
             Resp2Deserializer.deserialize("$10\r\nbla\t\nbla\rI\r\n").value shouldBe "bla\t\nbla\rI"
         }
-
     }
     describe("Deserializing Errors") {
-
         it("with message 'Error message'") {
             Resp2Deserializer.deserialize("-Error message\r\n").value shouldBe "Error message"
         }
@@ -53,7 +51,9 @@ class Resp2DeserializerSpec : DescribeSpec({
         }
     }
     describe("Deserializing Arrays") {
-
+        it("with number 42 and 'key' Simple String") {
+            Resp2Deserializer.deserialize("*2\r\n:+42\r\n+key\r\n").value shouldBe arrayOf(42, "key")
+        }
         it("with 'get' and 'key' BulkStrings") {
             Resp2Deserializer.deserialize("*2\r\n$3\r\nget\r\n$3\r\nkey\r\n").value shouldBe arrayOf("get", "key")
         }
@@ -73,6 +73,12 @@ class Resp2DeserializerSpec : DescribeSpec({
         }
         it("null") {
             Resp2Deserializer.deserialize("*-1\r\n").value shouldBe null
+        }
+        it("with nested arrays") {
+            val nestedArray = "*3\r\n$3\r\nkey\r\n*3\r\n:1\r\n:2\r\n:3\r\n*2\r\n+Hello\r\n-World\r\n"
+
+            Resp2Deserializer.deserialize(nestedArray).value shouldBe
+                    arrayOf("key", arrayOf(1, 2, 3), arrayOf("Hello","World"))
         }
     }
 })
